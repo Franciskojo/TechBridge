@@ -20,7 +20,9 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::MYSQL_ATTR_SSL_CA => (env('MYSQL_ATTR_SSL_CA') && file_exists(env('MYSQL_ATTR_SSL_CA')))
+                    ? env('MYSQL_ATTR_SSL_CA')
+                    : (file_exists(storage_path('certs/ca.pem')) ? storage_path('certs/ca.pem') : null),
             ]) : [],
         ],
 
