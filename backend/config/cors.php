@@ -4,6 +4,7 @@ return [
     'paths' => ['*'],
 
     'allowed_methods' => ['*'],
+    
 
     'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://localhost:3000,*')),
 
