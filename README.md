@@ -97,21 +97,27 @@ REST API runs at `http://localhost:8000/api/v1`.
 
 ---
 
-## Cloud Deployment (Vercel + Railway)
+## Cloud Deployment (Vercel + Render)
 
-### 1. Backend & Database (Railway)
-1. Deploy `backend/` directory to Railway.
-2. Add a **MySQL** database plugin on Railway.
-3. Configure environment variables in Railway:
+### 1. Backend & Database (Render)
+1. Log in to [render.com](https://render.com) and click **New +** -> **Web Service**.
+2. Connect your GitHub repository and set **Root Directory** to `backend`.
+3. Choose **Docker** as Runtime (Render automatically detects `backend/Dockerfile`).
+4. Set Environment Variables in Render:
+   - `APP_NAME=TechBridge`
+   - `APP_ENV=production`
+   - `APP_DEBUG=false`
+   - `APP_KEY=base64:Xk8m9+u/J2Y8W3kL4vP0qR1sT5uV7wX9yZ0aB1cC2dE=`
+   - `APP_URL=https://your-backend.onrender.com`
    - `DB_CONNECTION=mysql`
-   - `DB_HOST=${{MySQL.MYSQLHOST}}`
-   - `DB_PORT=${{MySQL.MYSQLPORT}}`
-   - `DB_DATABASE=${{MySQL.MYSQLDATABASE}}`
-   - `DB_USERNAME=${{MySQL.MYSQLUSER}}`
-   - `DB_PASSWORD=${{MySQL.MYSQLPASSWORD}}`
-   - `CORS_ALLOWED_ORIGINS=https://your-frontend.vercel.app`
+   - `DB_HOST=your-mysql-host`
+   - `DB_PORT=3306`
+   - `DB_DATABASE=techbridge`
+   - `DB_USERNAME=your-username`
+   - `DB_PASSWORD=your-password`
+   - `CORS_ALLOWED_ORIGINS=https://your-app.vercel.app`
 
 ### 2. Frontend (Vercel)
 1. Deploy `frontend/` directory to Vercel (Framework: Vite).
-2. Set environment variable in Vercel:
-   - `VITE_API_BASE_URL=https://your-railway-app.up.railway.app/api/v1`
+2. Set Environment Variable in Vercel:
+   - `VITE_API_BASE_URL=https://your-backend.onrender.com/api/v1`
