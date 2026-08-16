@@ -1,0 +1,67 @@
+{
+  "short_name": "TechBridge",
+  "name": "TechBridge Enterprise IT Service Desk",
+  "description": "Production-ready enterprise IT service desk and issue-management PWA connecting staff and technical teams.",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0b0f19",
+  "theme_color": "#2563eb",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/",
+  "shortcuts": [
+    {
+      "name": "Report New Issue",
+      "short_name": "New Issue",
+      "description": "Directly open ticket creation wizard",
+      "url": "/?action=create-ticket",
+      "icons": [{ "src": "/favicon.svg", "sizes": "512x512" }]
+    },
+    {
+      "name": "My Open Tickets",
+      "short_name": "My Tickets",
+      "description": "View active personal tickets",
+      "url": "/?tab=my-tickets",
+      "icons": [{ "src": "/favicon.svg", "sizes": "512x512" }]
+    },
+    {
+      "name": "Critical Incidents",
+      "short_name": "Critical Queue",
+      "description": "View urgent high priority queue",
+      "url": "/?tab=critical",
+      "icons": [{ "src": "/favicon.svg", "sizes": "512x512" }]
+    },
+    {
+      "name": "Knowledge Base",
+      "short_name": "KB Search",
+      "description": "Search self-help IT solutions",
+      "url": "/?tab=kb",
+      "icons": [{ "src": "/favicon.svg", "sizes": "512x512" }]
+    }
+  ]
+}

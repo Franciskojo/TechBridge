@@ -1,0 +1,31 @@
+# ── Frontend ──────────────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+frontend/.DS_Store
+
+# ── Backend ───────────────────────────────────────────────────────────────────
+backend/vendor/
+backend/.env
+backend/.env.backup
+backend/.phpunit.result.cache
+backend/.php-cs-fixer.cache
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/app/public/*
+!backend/storage/app/public/.gitkeep
+
+# SQLite dev databases
+backend/database/database.sqlite
+backend/database/database.sqlite-shm
+backend/database/database.sqlite-wal
+
+# ── Environment & IDE Noise ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log

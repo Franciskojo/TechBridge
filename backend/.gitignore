@@ -1,0 +1,22 @@
+# Laravel / PHP artifacts
+/vendor/
+/.env.backup
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+
+# SQLite dev databases — never commit these
+/database/database.sqlite
+/database/database.sqlite-shm
+/database/database.sqlite-wal
+
+# Storage (logs, uploads, cache) — should not be in VCS
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/app/public/*
+!/storage/app/public/.gitkeep
+
+# Composer lock differences (keep composer.lock for reproducibility, ignore OS noise)
+.DS_Store
+Thumbs.db
