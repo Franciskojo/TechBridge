@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   X,
   Loader2,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { Role } from '../../types';
 
@@ -69,6 +71,12 @@ export const LoginPage: React.FC = () => {
   // Login form state
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+
+  // Password visibility toggles
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  const [showRegConfirm, setShowRegConfirm] = useState(false);
+  const [showRegSecret, setShowRegSecret] = useState(false);
 
   // Register form state
   const [regName, setRegName] = useState<string>('');
@@ -224,13 +232,22 @@ export const LoginPage: React.FC = () => {
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-2.5 text-slate-500 hover:text-slate-300 transition-colors"
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
@@ -307,13 +324,24 @@ export const LoginPage: React.FC = () => {
                 <label className="block text-xs font-semibold text-indigo-300 mb-1">
                   Admin Secret Key (Optional)
                 </label>
-                <input
-                  type="password"
-                  placeholder="techbridge-admin-secret-2024"
-                  value={regSecret}
-                  onChange={(e) => setRegSecret(e.target.value)}
-                  className="w-full bg-slate-950 border border-indigo-500/40 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+                <div className="relative">
+                  <input
+                    type={showRegSecret ? 'text' : 'password'}
+                    placeholder="techbridge-admin-secret-2024"
+                    value={regSecret}
+                    onChange={(e) => setRegSecret(e.target.value)}
+                    className="w-full bg-slate-950 border border-indigo-500/40 rounded-xl px-3 pr-10 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegSecret((v) => !v)}
+                    className="absolute right-3 top-2 text-indigo-400 hover:text-indigo-200 transition-colors"
+                    tabIndex={-1}
+                    aria-label={showRegSecret ? 'Hide secret' : 'Show secret'}
+                  >
+                    {showRegSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
             )}
 
@@ -322,27 +350,49 @@ export const LoginPage: React.FC = () => {
                 <label className="block text-[11px] font-semibold text-slate-300 mb-1">
                   Password
                 </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  value={regPassword}
-                  onChange={(e) => setRegPassword(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="relative">
+                  <input
+                    type={showRegPassword ? 'text' : 'password'}
+                    required
+                    placeholder="••••••••"
+                    value={regPassword}
+                    onChange={(e) => setRegPassword(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 pr-9 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegPassword((v) => !v)}
+                    className="absolute right-2.5 top-2 text-slate-500 hover:text-slate-300 transition-colors"
+                    tabIndex={-1}
+                    aria-label={showRegPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showRegPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-[11px] font-semibold text-slate-300 mb-1">
                   Confirm Password
                 </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  value={regConfirmPassword}
-                  onChange={(e) => setRegConfirmPassword(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="relative">
+                  <input
+                    type={showRegConfirm ? 'text' : 'password'}
+                    required
+                    placeholder="••••••••"
+                    value={regConfirmPassword}
+                    onChange={(e) => setRegConfirmPassword(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 pr-9 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegConfirm((v) => !v)}
+                    className="absolute right-2.5 top-2 text-slate-500 hover:text-slate-300 transition-colors"
+                    tabIndex={-1}
+                    aria-label={showRegConfirm ? 'Hide password' : 'Show password'}
+                  >
+                    {showRegConfirm ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
               </div>
             </div>
 
