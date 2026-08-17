@@ -1,7 +1,8 @@
 // TechBridge API Service — REST client for backend endpoints
 import { Ticket, KnowledgeArticle, User, Department, ITSystem, TicketCategory, AuditLogItem, AppNotification } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/$/, '');
+const API_BASE_URL = rawBaseUrl.endsWith('/api/v1') ? rawBaseUrl : `${rawBaseUrl}/api/v1`;
 
 // ── Helper ─────────────────────────────────────────────────────────────────
 function authHeaders(token?: string | null): Record<string, string> {

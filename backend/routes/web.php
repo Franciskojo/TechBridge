@@ -9,3 +9,7 @@ Route::get('/', function () {
         'version' => '1.0.0-Laravel13'
     ]);
 });
+
+Route::match(['get', 'head'], '/health', fn () => response()->json(['status' => 'ok', 'service' => 'TechBridge API'], 200));
+Route::match(['get', 'head'], '/api/health', fn () => response()->json(['status' => 'ok', 'service' => 'TechBridge API'], 200));
+
