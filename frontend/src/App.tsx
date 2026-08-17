@@ -1,29 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PWAProvider } from './context/PWAContext';
+// Always-visible shell components — kept as static imports
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
 import { MobileNav } from './components/layout/MobileNav';
-import { EmployeeDashboard } from './components/dashboards/EmployeeDashboard';
-import { TechnicianDashboard } from './components/dashboards/TechnicianDashboard';
-import { TeamLeadDashboard } from './components/dashboards/TeamLeadDashboard';
-import { AdminDashboard } from './components/dashboards/AdminDashboard';
-import { CreateTicketModal } from './components/tickets/CreateTicketModal';
-import { TicketDetailModal } from './components/tickets/TicketDetailModal';
-import { TicketHistory } from './components/tickets/TicketHistory';
-import { SyncQueueModal } from './components/offline/SyncQueueModal';
-import { KnowledgeBaseHub } from './components/kb/KnowledgeBaseHub';
-import { AuditLogViewer } from './components/admin/AuditLogViewer';
-import { ReportDashboard } from './components/admin/ReportDashboard';
-import { StaffDirectoryViewer } from './components/admin/StaffDirectoryViewer';
-import { PwaInstallBanner } from './components/pwa/PwaInstallBanner';
+import { LoginPage } from './components/auth/LoginPage';
 import { PriorityBadge } from './components/ui/PriorityBadge';
 import { StatusBadge } from './components/ui/StatusBadge';
 import { SlaTimer } from './components/ui/SlaTimer';
-import { LoginPage } from './components/auth/LoginPage';
+import { PwaInstallBanner } from './components/pwa/PwaInstallBanner';
 import { fetchTicketsApi } from './services/api';
 import { Ticket } from './types';
-import { Search, Ticket as TicketIcon, Filter, Loader2 } from 'lucide-react';
+import { Search, Ticket as TicketIcon, Loader2 } from 'lucide-react';
+
+// Heavy route-level components — lazy loaded on first navigation
+const EmployeeDashboard   = lazy(() => import('./components/dashboards/EmployeeDashboard').then(m => ({ default: m.EmployeeDashboard })));
+const TechnicianDashboard = lazy(() => import('./components/dashboards/TechnicianDashboard').then(m => ({ default: m.TechnicianDashboard })));
+const TeamLeadDashboard   = lazy(() => import('./components/dashboards/TeamLeadDashboard').then(m => ({ default: m.TeamLeadDashboard })));
+const AdminDashboard      = lazy(() => import('./components/dashboards/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+const CreateTicketModal   = lazy(() => import('./components/tickets/CreateTicketModal').then(m => ({ default: m.CreateTicketModal })));
+const TicketDetailModal   = lazy(() => import('./components/tickets/TicketDetailModal').then(m => ({ default: m.TicketDetailModal })));
+const TicketHistory       = lazy(() => import('./components/tickets/TicketHistory').then(m => ({ default: m.TicketHistory })));
+const SyncQueueModal      = lazy(() => import('./components/offline/SyncQueueModal').then(m => ({ default: m.SyncQueueModal })));
+const KnowledgeBaseHub    = lazy(() => import('./components/kb/KnowledgeBaseHub').then(m => ({ default: m.KnowledgeBaseHub })));
+const AuditLogViewer      = lazy(() => import('./components/admin/AuditLogViewer').then(m => ({ default: m.AuditLogViewer })));
+const ReportDashboard     = lazy(() => import('./components/admin/ReportDashboard').then(m => ({ default: m.ReportDashboard })));
+const StaffDirectoryViewer = lazy(() => import('./components/admin/StaffDirectoryViewer').then(m => ({ default: m.StaffDirectoryViewer })));
+
+// Fallback spinner shown while a lazy chunk loads
+const TabFallback = () => (
+  <div className="flex items-center justify-center py-24 text-slate-500">
+    <Loader2 className="w-6 h-6 animate-spin" />
+  </div>
+);
 
 const AppContent: React.FC = () => {
   const { user, role, isAuthenticated, isLoading } = useAuth();
@@ -140,6 +150,7 @@ const AppContent: React.FC = () => {
 
         {/* Main Content Area */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto min-h-0 max-w-7xl mx-auto w-full">
+          <Suspense fallback={<TabFallback />}>
           {activeTab === 'dashboard' && (
             <>
               {role === 'Employee' && (
@@ -266,6 +277,7 @@ const AppContent: React.FC = () => {
           {activeTab === 'history' && (
             <TicketHistory tickets={tickets} onSelectTicket={handleSelectTicket} />
           )}
+          </Suspense>
         </main>
       </div>
 
@@ -279,25 +291,27 @@ const AppContent: React.FC = () => {
       {/* PWA Install Banner */}
       <PwaInstallBanner />
 
-      {/* Modals */}
-      <CreateTicketModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onTicketCreated={handleTicketCreated}
-      />
+      {/* Modals — lazy loaded, Suspense renders nothing while chunk fetches */}
+      <Suspense fallback={null}>
+        <CreateTicketModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onTicketCreated={handleTicketCreated}
+        />
 
-      <TicketDetailModal
-        isOpen={isDetailModalOpen}
-        ticket={selectedTicket}
-        onClose={() => setIsDetailModalOpen(false)}
-        onUpdateTicket={handleUpdateTicket}
-        onDeleteTicket={handleDeleteTicket}
-      />
+        <TicketDetailModal
+          isOpen={isDetailModalOpen}
+          ticket={selectedTicket}
+          onClose={() => setIsDetailModalOpen(false)}
+          onUpdateTicket={handleUpdateTicket}
+          onDeleteTicket={handleDeleteTicket}
+        />
 
-      <SyncQueueModal
-        isOpen={isSyncModalOpen}
-        onClose={() => setIsSyncModalOpen(false)}
-      />
+        <SyncQueueModal
+          isOpen={isSyncModalOpen}
+          onClose={() => setIsSyncModalOpen(false)}
+        />
+      </Suspense>
     </div>
   );
 };
