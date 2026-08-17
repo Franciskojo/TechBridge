@@ -23,6 +23,10 @@ Route::match(['get', 'head'], '/health', fn () => response()->json(['status' => 
 |--------------------------------------------------------------------------
 */
 
+// Public Auth Endpoints (unprefixed aliases)
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/register', [AuthController::class, 'register']);
+
 Route::prefix('v1')->group(function () {
 
     // ── Public Auth Endpoints ──────────────────────────────────────────
