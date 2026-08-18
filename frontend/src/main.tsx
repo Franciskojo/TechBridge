@@ -7,17 +7,36 @@ import './index.css'
 // ── Global Error Boundary ─────────────────────────────────────────────────────
 // Catches any unhandled React render errors and shows a recovery screen
 // instead of a black/blank page.
+// Special case: chunk load errors (stale deployment) trigger a silent
+// one-time auto-reload so the user gets the fresh assets automatically.
 class AppErrorBoundary extends React.Component<
   { children: React.ReactNode },
-  { hasError: boolean; errorMessage: string }
+  { hasError: boolean; errorMessage: string; isChunkError: boolean }
 > {
   constructor(props: { children: React.ReactNode }) {
     super(props);
-    this.state = { hasError: false, errorMessage: '' };
+    this.state = { hasError: false, errorMessage: '', isChunkError: false };
   }
 
   static getDerivedStateFromError(error: Error) {
-    return { hasError: true, errorMessage: error.message };
+    // Detect stale-deployment chunk load failures
+    const isChunk =
+      error.message.includes('Failed to fetch dynamically imported module') ||
+      error.message.includes('Importing a module script failed') ||
+      error.name === 'ChunkLoadError';
+
+    if (isChunk) {
+      // Guard: only reload once per session to avoid infinite loops
+      const reloaded = sessionStorage.getItem('tb_chunk_reload');
+      if (!reloaded) {
+        sessionStorage.setItem('tb_chunk_reload', '1');
+        window.location.reload();
+        // Return interim state — reload is already in flight
+        return { hasError: false, errorMessage: '', isChunkError: true };
+      }
+    }
+
+    return { hasError: true, errorMessage: error.message, isChunkError: false };
   }
 
   handleReset = () => {
@@ -25,6 +44,7 @@ class AppErrorBoundary extends React.Component<
     localStorage.removeItem('techbridge_token');
     localStorage.removeItem('techbridge_user');
     localStorage.removeItem('techbridge_session_at');
+    sessionStorage.removeItem('tb_chunk_reload');
     window.location.reload();
   };
 
