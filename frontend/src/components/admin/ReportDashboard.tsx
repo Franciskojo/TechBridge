@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { BarChart3, Download, Clock, CheckCircle2, Star, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
+import { API_BASE_URL, authHeaders } from '../../services/api';
 
 interface ReportSummary {
   by_status: Record<string, number>;
@@ -31,11 +32,8 @@ const DEMO_SUMMARY: ReportSummary = {
 
 const fetchReportSummary = async (): Promise<ReportSummary> => {
   const token = localStorage.getItem('techbridge_token');
-  const res = await fetch('/api/v1/reports/summary', {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : '',
-      Accept: 'application/json',
-    },
+  const res = await fetch(`${API_BASE_URL}/reports/summary`, {
+    headers: authHeaders(token),
   });
   if (!res.ok) throw new Error('Failed to fetch report summary');
   return res.json();
@@ -86,7 +84,7 @@ export const ReportDashboard: React.FC = () => {
   const handleExportCsv = () => {
     const token = localStorage.getItem('techbridge_token');
     // Attach token via query param for file download (browser navigation)
-    window.open(`/api/v1/reports/export-csv?token=${token ?? ''}`, '_blank');
+    window.open(`${API_BASE_URL}/reports/export-csv?token=${token ?? ''}`, '_blank');
   };
 
   const priorityColors: Record<string, string> = {

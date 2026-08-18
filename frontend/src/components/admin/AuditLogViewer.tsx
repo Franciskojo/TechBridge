@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ShieldCheck, Loader2, AlertCircle, Search, RefreshCw } from 'lucide-react';
 import { AuditLogItem } from '../../types';
+import { API_BASE_URL, authHeaders } from '../../services/api';
 
 const MOCK_AUDIT_LOGS: AuditLogItem[] = [
   {
@@ -54,15 +55,12 @@ const ACTION_COLORS: Record<string, string> = {
 
 const fetchAuditLogs = async (): Promise<AuditLogItem[]> => {
   const token = localStorage.getItem('techbridge_token');
-  const res = await fetch('/api/v1/audit-logs', {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : '',
-      Accept: 'application/json',
-    },
+  const res = await fetch(`${API_BASE_URL}/audit-logs`, {
+    headers: authHeaders(token),
   });
   if (!res.ok) throw new Error('Failed to fetch audit logs');
   const data = await res.json();
-  return data.data || data;
+  return Array.isArray(data) ? data : (data.data || []);
 };
 
 export const AuditLogViewer: React.FC = () => {

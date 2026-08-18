@@ -1,18 +1,18 @@
 // TechBridge API Service — REST client for backend endpoints
 import { Ticket, KnowledgeArticle, User, Department, ITSystem, TicketCategory, AuditLogItem, AppNotification } from '../types';
 
-const rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/$/, '');
-const API_BASE_URL = rawBaseUrl.endsWith('/api/v1') ? rawBaseUrl : `${rawBaseUrl}/api/v1`;
+export const rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/$/, '');
+export const API_BASE_URL = rawBaseUrl.endsWith('/api/v1') ? rawBaseUrl : `${rawBaseUrl}/api/v1`;
 
 // ── Helper ─────────────────────────────────────────────────────────────────
-function authHeaders(token?: string | null): Record<string, string> {
+export function authHeaders(token?: string | null): Record<string, string> {
   const headers: Record<string, string> = { Accept: 'application/json' };
   const t = token || localStorage.getItem('techbridge_token');
   if (t) headers.Authorization = `Bearer ${t}`;
   return headers;
 }
 
-function jsonHeaders(token?: string | null): Record<string, string> {
+export function jsonHeaders(token?: string | null): Record<string, string> {
   return { ...authHeaders(token), 'Content-Type': 'application/json' };
 }
 
@@ -58,6 +58,33 @@ export const createTicketApi = async (
     }
   } catch (e) {
     console.warn('Create ticket API failed:', e);
+  }
+  return null;
+};
+
+export const updateTicketStatusApi = async (
+  ticketId: string,
+  status: string,
+  rootCause?: string,
+  resolutionSummary?: string,
+  token?: string | null
+): Promise<Ticket | null> => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/tickets/${ticketId}/status`, {
+      method: 'PATCH',
+      headers: jsonHeaders(token),
+      body: JSON.stringify({
+        status,
+        root_cause: rootCause || undefined,
+        resolution_summary: resolutionSummary || undefined,
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.ticket || data.data || data;
+    }
+  } catch (e) {
+    console.warn('Update ticket status API failed:', e);
   }
   return null;
 };

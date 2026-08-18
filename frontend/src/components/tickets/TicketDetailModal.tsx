@@ -24,7 +24,7 @@ import {
   Trash2,
   AlertCircle,
 } from 'lucide-react';
-import { convertTicketToKbApi } from '../../services/api';
+import { convertTicketToKbApi, updateTicketStatusApi } from '../../services/api';
 
 interface TicketDetailModalProps {
   ticket: Ticket | null;
@@ -79,39 +79,26 @@ export const TicketDetailModal: React.FC<TicketDetailModalProps> = ({ ticket, is
 
   const updateStatusApi = async (status: TicketStatus, cause?: string, summary?: string) => {
     const token = localStorage.getItem('techbridge_token');
-    if (token) {
-      try {
-        const res = await fetch(`/api/v1/tickets/${ticket.id}/status`, {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            status,
-            root_cause: cause || undefined,
-            resolution_summary: summary || undefined,
-          }),
+    try {
+      const serverTicket = await updateTicketStatusApi(
+        ticket.id,
+        status,
+        cause,
+        summary,
+        token
+      );
+      if (serverTicket && serverTicket.id) {
+        onUpdateTicket({
+          ...ticket,
+          ...serverTicket,
+          status: serverTicket.status || status,
+          resolved_at: serverTicket.resolved_at || (status === 'Resolved' ? new Date().toISOString() : ticket.resolved_at),
+          closed_at: serverTicket.closed_at || (status === 'Closed' ? new Date().toISOString() : ticket.closed_at),
         });
-
-        if (res.ok) {
-          const data = await res.json();
-          const serverTicket = data.ticket || data.data || data;
-          if (serverTicket && serverTicket.id) {
-            onUpdateTicket({
-              ...ticket,
-              ...serverTicket,
-              status: serverTicket.status || status,
-              resolved_at: serverTicket.resolved_at || (status === 'Resolved' ? new Date().toISOString() : ticket.resolved_at),
-              closed_at: serverTicket.closed_at || (status === 'Closed' ? new Date().toISOString() : ticket.closed_at),
-            });
-            window.dispatchEvent(new CustomEvent('techbridge:notification-refresh'));
-          }
-        }
-      } catch (e) {
-        console.warn('Status update API failed:', e);
+        window.dispatchEvent(new CustomEvent('techbridge:notification-refresh'));
       }
+    } catch (e) {
+      console.warn('Status update API failed:', e);
     }
   };
 
