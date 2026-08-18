@@ -50,15 +50,38 @@ const AppContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
+  // Fetch tickets and keep them fresh
+  const refreshTickets = React.useCallback(() => {
+    if (!isAuthenticated) return;
+    fetchTicketsApi(role, user?.id, user?.email).then((data) => {
+      if (data && data.length > 0) setTickets(data);
+    });
+  }, [isAuthenticated, role, user?.id, user?.email]);
+
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchTicketsApi(role, user?.id, user?.email).then((data) => {
-        if (data && data.length > 0) {
-          setTickets(data);
-        }
-      });
-    }
-  }, [role, isAuthenticated, user]);
+    refreshTickets();
+
+    // Poll every 60 s so status changes by other users are picked up silently
+    const interval = setInterval(refreshTickets, 60000);
+
+    // Refresh immediately when the tab regains focus
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') refreshTickets();
+    };
+
+    // Refresh when the notification bell detects a new notification
+    // (means something changed server-side — re-fetch tickets too)
+    const onNotifRefresh = () => refreshTickets();
+
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('techbridge:notification-refresh', onNotifRefresh);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('techbridge:notification-refresh', onNotifRefresh);
+    };
+  }, [refreshTickets]);
 
   if (isLoading) {
     return (

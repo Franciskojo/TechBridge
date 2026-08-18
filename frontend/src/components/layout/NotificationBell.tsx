@@ -86,11 +86,16 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTo
     }
   };
 
-
   // Fetch unread count on mount and every 15 seconds
   const pollUnreadCount = useCallback(async () => {
     const count = await fetchUnreadCountApi();
-    setUnreadCount(count);
+    setUnreadCount((prev) => {
+      // When new notifications arrive, signal App.tsx to re-fetch tickets immediately
+      if (count > prev) {
+        window.dispatchEvent(new CustomEvent('techbridge:notification-refresh'));
+      }
+      return count;
+    });
   }, []);
 
   useEffect(() => {
