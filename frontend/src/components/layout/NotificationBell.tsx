@@ -87,7 +87,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTo
   };
 
 
-  // Fetch unread count on mount and every 30 seconds
+  // Fetch unread count on mount and every 15 seconds
   const pollUnreadCount = useCallback(async () => {
     const count = await fetchUnreadCountApi();
     setUnreadCount(count);
@@ -95,16 +95,27 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTo
 
   useEffect(() => {
     pollUnreadCount();
-    const interval = setInterval(pollUnreadCount, 30000);
+    const interval = setInterval(pollUnreadCount, 15000); // ← 15 s (was 30 s)
+
+    // Refresh immediately when the user switches back to this tab
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        pollUnreadCount();
+        if (isOpen) fetchNotificationsApi().then(setNotifications);
+      }
+    };
+
     const handleRefresh = () => {
       pollUnreadCount();
       if (isOpen) {
         fetchNotificationsApi().then(setNotifications);
       }
     };
+    document.addEventListener('visibilitychange', handleVisibility);
     window.addEventListener('techbridge:notification-refresh', handleRefresh);
     return () => {
       clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('techbridge:notification-refresh', handleRefresh);
     };
   }, [pollUnreadCount, isOpen]);
